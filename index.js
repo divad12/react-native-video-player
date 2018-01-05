@@ -126,6 +126,12 @@ export default class VideoPlayer extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (!prevState.ended && this.state.ended) {
+      this.player.seek(0);
+    }
+  }
+
   componentWillUnmount() {
     if (this.controlsTimeout) {
       clearTimeout(this.controlsTimeout);
@@ -177,10 +183,10 @@ export default class VideoPlayer extends Component {
 
     this.setState({ progress: 1 });
 
-    this.player.seek(0);
     if (!this.props.loop) {
       this.setState({
         isPlaying: false,
+        ended: true,
       });
     }
   }
@@ -459,8 +465,8 @@ export default class VideoPlayer extends Component {
             { marginTop: -this.getSizeStyles().height },
           ]}
         >
-          <TouchableOpacity 
-            style={styles.overlayButton} 
+          <TouchableOpacity
+            style={styles.overlayButton}
             onPress={() => {
               this.showControls();
               if (pauseOnPress)
@@ -469,7 +475,7 @@ export default class VideoPlayer extends Component {
             onLongPress={() => {
               if (fullScreenOnLongPress && Platform.OS !== 'android')
                 this.onToggleFullScreen();
-            }} 
+            }}
           />
         </View>
         {((!this.state.isPlaying) || this.state.isControlsVisible)
